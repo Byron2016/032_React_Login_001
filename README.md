@@ -227,9 +227,66 @@
       }
     ```
 
+  - **Create a Default layout**
+    - Create a new file in this route src/layout/DefaultLayout.tsx
 
+    ```js
+      import { Link } from "react-router-dom";
 
+      interface DefaultLayoutProps {
+        children?: React.ReactNode;
+      }
+      export default function DefaultLayout({ children }:       DefaultLayoutProps) {
+        return (
+          <>
+            <header>
+              <nav>
+                <ul>
+                  <li>
+                    <Link to="/">Login</Link>
+                  </li>
+                  <li>
+                    <Link to="/signup">Signup</Link>
+                  </li>
+                </ul>
+              </nav>
+            </header>
 
+            <main>{children}</main>
+          </>
+        );
+      }
+    ```
+
+  - **Update Login and Signup to use a Default layout**
+    ```js
+      import { useState } from "react";
+      import DefaultLayout from "../layout/DefaultLayout"
+      
+      export default function Login(){
+        
+        const [username, setUsername] = useState("");
+        const [password, setPassword] = useState("");
+      
+        return (
+          <DefaultLayout>
+            <form className="form">
+                <h1>Login</h1>
+                <label >UserName</label>
+                <input type="text"  value={username} 
+                onChange={(e) => setUsername(e.target.value)}/>
+      
+                <label >Password</label>
+                <input type="password" value={password} 
+                onChange={(e) => setPassword(e.target.value)} />
+      
+                <button>Login</button>
+            </form>
+          </DefaultLayout>
+        )
+      }
+
+    ```
 
 
 [⏪(Back to top)](#table-of-contents)
