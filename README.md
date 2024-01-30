@@ -262,12 +262,12 @@
     ```js
       import { useState } from "react";
       import DefaultLayout from "../layout/DefaultLayout"
-      
+
       export default function Login(){
-        
+
         const [username, setUsername] = useState("");
         const [password, setPassword] = useState("");
-      
+
         return (
           <DefaultLayout>
             <form className="form">
@@ -275,11 +275,11 @@
                 <label >UserName</label>
                 <input type="text"  value={username} 
                 onChange={(e) => setUsername(e.target.value)}/>
-      
+
                 <label >Password</label>
                 <input type="password" value={password} 
                 onChange={(e) => setPassword(e.target.value)} />
-      
+
                 <button>Login</button>
             </form>
           </DefaultLayout>
@@ -287,6 +287,32 @@
       }
 
     ```
+
+  - **Validate protected routes for Login and Signup**
+    - 
+  - **Update Login and Signup to use a Default layout**
+    ```js
+      ....
+      import { useAuth } from "../auth/AuthProvider";
+      import { Navigate } from "react-router-dom";
+      
+      export default function Login(){
+        ....
+      
+        const auth = useAuth()
+      
+        if(auth.isAuthenticated){
+          /* si ya está autentificado se va directo al      dashboard. */
+          return <Navigate to="/dashboard"/>
+        }
+      
+        ....
+      }
+      
+    ```
+
+
+
 
 
 [⏪(Back to top)](#table-of-contents)
