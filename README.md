@@ -64,7 +64,7 @@
 
 # Steps
 
-- **Install and Setup Vite React **
+- **Install and Setup Vite React**
 
   - **Create Vite Project For React**
 
@@ -85,6 +85,26 @@
 
     ```bash
       pnpm add react-router-dom
+    ```
+- **Front-End:**
+  - **Add CSS and delete some files**
+  - **Add Routes to main.tsx**
+
+    ```js
+    import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+
+    const router = createBrowserRouter([
+      {
+        path: "/",
+        element: <App/>,
+      }
+    ]);
+
+    ReactDOM.createRoot(document.getElementById('root')   !).render(
+      <React.StrictMode>
+        <RouterProvider router={router} />
+      </React.StrictMode>,
+    )
     ```
 
 [⏪(Back to top)](#table-of-contents)
