@@ -107,4 +107,54 @@
     )
     ```
 
+  - **Add new Routes to main.tsx**
+    - Create a new folder src/routes
+      - Create new file Login.tsx
+      - Create new file Signup.tsx
+      - Create new file Dashboard.tsx
+    - Add this new routes to the last routes that we created.
+
+    ```js
+    ....
+    const router = createBrowserRouter([
+      {
+        path: "/dashboard",
+        element: <Dashboard/>,
+      }
+    ]);
+
+    ....
+    ```
+  - **Add a Protected route to main.tsx**
+    - Create a new folder src/routes
+      - Create new file ProtectedRoute.tsx
+    - Add this new routes to the last routes that we created.
+
+    ```js
+    ....
+    const router = createBrowserRouter([
+      ....
+      {
+        path: "/",
+        element: <ProtectedRoute/>,
+        children: [
+          {
+            path: "/dashboard",
+            element: <Dashboard/>,
+          }
+        ]
+      },
+    ]);
+    ....
+    ```
+
+
+
+
+
+
+
+
+
+
 [⏪(Back to top)](#table-of-contents)
