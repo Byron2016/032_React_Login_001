@@ -81,6 +81,10 @@
   		- pnpm install
   		- pnpm run dev 
 
-  
+  - **Add Routes Management**
+
+    ```bash
+      pnpm add react-router-dom
+    ```
 
 [⏪(Back to top)](#table-of-contents)
