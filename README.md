@@ -289,30 +289,69 @@
     ```
 
   - **Validate protected routes for Login and Signup**
-    - 
-  - **Update Login and Signup to use a Default layout**
-    ```js
-      ....
-      import { useAuth } from "../auth/AuthProvider";
-      import { Navigate } from "react-router-dom";
-      
-      export default function Login(){
+    -  Update Login and Signup to use a Default layout
+      ```js
         ....
-      
-        const auth = useAuth()
-      
-        if(auth.isAuthenticated){
-          /* si ya está autentificado se va directo al      dashboard. */
-          return <Navigate to="/dashboard"/>
+        import { useAuth } from "../auth/AuthProvider";
+        import { Navigate } from "react-router-dom";
+
+        export default function Login(){
+          ....
+
+          const auth = useAuth()
+
+          if(auth.isAuthenticated){
+            /* si ya está autentificado se va directo al      dashboard. */
+            return <Navigate to="/dashboard"/>
+          }
+
+          ....
         }
-      
-        ....
-      }
+      ```
+
+
+- **Back-End:**
+  - **Create a Back-End project**
+
+    ```bash
+      mkdir auth-back
+      cd auth-back 
+      pnpm init
+      echo  "node_modules" > .gitignore
       
     ```
 
+  - **Add some modules to out back-end project**
+    ```bash
+      pnpm add express cors bcrypt dotenv jsonwebtoken mongoose 
+      pnpm add nodemon -D 
+    ```
 
+  - **Add eslint standard**
+    ```bash
+      pnpm add eslint -D 
+      npm init @eslint/config
+    ```
 
+  - **Add a server**
+    ```js
+      const express = require('express')
+      const cors = require('cors')
+      const app = express()
+      const mongoose = require('mongoose')
+      
+      require('dotenv').config()
+      
+      const port = process.env.PORT || 5000
+      
+      app.get('/', (req, res) => {
+        res.send('Hello World!!')
+      })
+      
+      app.listen(port, () => {
+        console.log(`Server is running on port: ${port}. http://localhost:${port}/`)
+      })
+    ```
 
 
 [⏪(Back to top)](#table-of-contents)
