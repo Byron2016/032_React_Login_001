@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import DefaultLayout from "../layout/DefaultLayout"
 import { useAuth } from "../auth/AuthProvider";
 import { Navigate, useNavigate } from "react-router-dom";
-import { API_URL } from "../auth/constants";
+import { API_URL } from "../auth/authConstants";
 import type { AuthResponseError } from "../types/types";
 
 export default function Signup(){

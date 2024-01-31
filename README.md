@@ -831,6 +831,9 @@
 
       ```
 
-
+- **Front-End:**
+  - **Work with access and refresh tokens**
+    - Access token must not be saved, it must be in memory (1.37.00), it is active during time our tab's browser is open.
+    - Refresh Token there are some alternatives we are going to save it in localStorage.
 
 [⏪(Back to top)](#table-of-contents)
