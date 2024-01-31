@@ -679,7 +679,157 @@
             ....
           ```
 
+  - **Generate Tokens**
+    - Create a new method to getUserInfo into file libs/getUserInfo.js . 
+      ```js
+        function getUserInfo (user) {
+          return {
+            username: user.username,
+            name: user.name,
+            id: user.id || user._id
+          }
+        }
 
+        module.exports = getUserInfo
+      ```
+    - Create a new Schema named token into file schema/token.js . 
+      ```js
+        const Mongoose = require('mongoose')
+
+        const TokenSchema = new Mongoose.Schema({
+          id: { type: Object },
+          token: { type: String, required: true }
+        })
+
+        module.exports = Mongoose.model('Token', TokenSchema)
+      ```
+    - Create a new methods to generate tokens into file auth/sign.js . 
+      ```js
+        const jwt = require('jsonwebtoken')
+        require('dotenv').config()
+
+        function sign (payload, isAccessToken) {
+          console.log('payload', payload)
+          return jwt.sign(
+            payload,
+            isAccessToken
+              ? process.env.ACCESS_TOKEN_SECRET
+              : process.env.REFRESH_TOKEN_SECRET,
+            {
+              expiresIn: 3600,
+              algorithm: 'HS256'
+            }
+          )
+        }
+
+        // Función para generar un token de acceso utilizando jsonwebtoken
+        function generateAccessToken (user) {
+          return sign({ user }, true)
+        }
+        function generateRefreshToken (user) {
+          return sign({ user }, false)
+        }
+
+        module.exports = { generateAccessToken, generateRefreshToken }
+      ```
+    - Create two new methods into User.js Schema. 
+      ```js
+        ....
+        const { generateAccessToken, generateRefreshToken } = require('../auth/sign')
+        const getUserInfo = require('../libs/getUserInfo')
+        const Token = require('../schema/token')
+
+        ....
+
+
+        UserSchema.methods.createAccessToken = function () {
+          return generateAccessToken(getUserInfo(this))
+        }
+
+        UserSchema.methods.createRefreshToken = async function () {
+          const refreshToken = generateRefreshToken(getUserInfo(this))
+
+          console.error('refreshToken', refreshToken)
+
+          try {
+            await new Token({ token: refreshToken }).save()
+            console.log('Token saved', refreshToken)
+            return refreshToken
+          } catch (error) {
+            console.error(error)
+            // next(new Error("Error creating token"));
+          }
+        }
+
+        // module.exports = Mongoose.model('User', UserSchema)
+
+        const MyUserModel = Mongoose.models.User || Mongoose.model('User', UserSchema)
+        module.exports = MyUserModel
+      ```
+    - Update login.js . 
+      ```js
+        ....
+        const User = require('../schema/user')
+        const { jsonResponse } = require('../libs/jsonResponse')
+        const getUserInfo = require('../libs/getUserInfo')
+
+        router.post('/', async (req, res) => {
+          const { username, password } = req.body
+
+          if (!username || !password) {
+            return res.status(400).json(jsonResponse(400, {
+              error: 'Fields are required'
+            }))
+          }
+
+          try {
+            let user = new User()
+            const userExists = await user.usernameExists(username)
+
+            if (userExists) {
+              user = await User.findOne({ username })
+
+              const passwordCorrect = await user.isCorrectPassword(
+                password,
+                user.password
+              )
+
+              if (passwordCorrect) {
+                const accessToken = user.createAccessToken()
+                const refreshToken = await user.createRefreshToken()
+
+                console.log({ accessToken, refreshToken })
+
+                return res.json(
+                  jsonResponse(200, {
+                    accessToken,
+                    refreshToken,
+                    user: getUserInfo(user)
+                  })
+                )
+              } else {
+                // res.status(401).json({ error: "username and/or password incorrect" });
+
+                return res.status(401).json(
+                  jsonResponse(401, {
+                    error: 'username and/or password incorrect'
+                  })
+                )
+              }
+            } else {
+              return res.status(401).json(
+                jsonResponse(401, {
+                  error: 'username does not exist'
+                })
+              )
+            }
+          } catch (err) {
+            console.log(err)
+          }
+        })
+        module.exports = router
+
+      ```
 
 
 
