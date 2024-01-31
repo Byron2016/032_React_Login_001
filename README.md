@@ -548,4 +548,139 @@
         ....
       ```
 
+- **MongoDB**
+  - **Configuration**
+    - Go to this URL: [MongoDB Atlas](https://www.mongodb.com/es/ cloud/atlas/lp/try4?utm_ad_campaign_id=19647047924&  adgroup=148795219147&cq_cmp=19647047924&gad_source=1)
+    - Press: Visit MongoDB Atlas 
+      - Database: Create a Database / Build your Database 
+      - Free
+      - Credentias:
+        - Username 
+        - Password 
+      - Deploy Database 
+      - Press Connect button
+        - Select connect to Cluster 
+          - Select your driver and version
+            - Driver: Node.js 
+            - Version: 5.5 or later 
+          - Install your driver 
+            - It is recomended to use mongodb, we are using   mongose
+          - Add your connection string into your application
+            - Copy this connection string.
+    - **Conect Back-End to MongoDB**
+      - Create a new .env file.
+        ```js
+          DB_CONNECTION_STRING=myDBConnectionString
+          ACCESS_TOKEN_SECRET=myAccessToken
+          REFRESH_TOKEN_SECRET=myRefreshToken
+        ```
+
+        - To generate secure Tokens, you can go to [Online UUID Generator](https://www.uuidgenerator.net/)
+      - Generate a new conection 
+        - Into App.js create a new function.
+          ```js
+            ....
+            app.use(express.json())
+
+            async function main () {
+              await mongoose.connect(process.env.DB_CONNECTION_STRING)
+              console.log('Connected to MongoDB')
+            }
+
+            main().catch(console.error)
+
+            app.use('/api/signup', require('./routes/signup'))
+            ....
+          ```
+      - **Generate a new user** 
+        - Create a new Schema 
+          - Create a new file into "./schema/user.js"
+            ```js
+              const Mongoose = require('mongoose')
+              const bcrypt = require('bcrypt')
+
+              const UserSchema = new Mongoose.Schema({
+                id: { type: Object },
+                username: { type: String, required: true, unique: true },
+                password: { type: String, required: true },
+                name: { type: String, required: true }
+              })
+
+              UserSchema.pre('save', function (next) {
+                if (this.isModified('password') || this.isNew) {
+                  const document = this
+
+                  bcrypt.hash(document.password, 10, (err, hash) => {
+                    if (err) {
+                      next(err)
+                    } else {
+                      document.password = hash
+                      next()
+                    }
+                  })
+                } else {
+                  next()
+                }
+              })
+
+              UserSchema.methods.usernameExists = async function (username) {
+                const result = await Mongoose.model('User').find({ username })
+                return result.length > 0
+              }
+
+              UserSchema.methods.isCorrectPassword = async function (password, hash) {
+                console.log(password, hash)
+                const same = await bcrypt.compare(password, hash)
+
+                return same
+              }
+
+              module.exports = Mongoose.model('User', UserSchema)
+            ```
+        - Update "signup.js" to create a new user. 
+          ```js
+            ....
+            const User = require('../schema/user')
+            /*  now it is a async function*/
+            router.post('/', async (req, res) => {
+              ....
+
+              // crear usuario.
+              try {
+                const user = new User()
+                const userExists = await user.usernameExists(username)
+                if (userExists) {
+                  return res.status(409).json(
+                    jsonResponse(409, {
+                      error: 'Username already exists'
+                    })
+                  )
+                } else {
+                  const newUser = new User({ username, name, password })
+
+                  newUser.save()
+
+                  res
+                    .status(200).json(
+                      jsonResponse(200, {
+                        message: 'User created successfully'
+                      })
+                    )
+                  // res.send('signup')
+                }
+              } catch (error) {
+                return res.status(500).json(
+                  jsonResponse(500, {
+                    error: 'Error creating user'
+                  })
+                )
+              }
+            })
+            ....
+          ```
+
+
+
+
+
 [⏪(Back to top)](#table-of-contents)
