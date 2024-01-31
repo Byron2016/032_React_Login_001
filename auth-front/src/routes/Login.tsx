@@ -31,7 +31,7 @@ export default function Login(){
       });
 
       if(response.ok){
-        console.log("User created successfully");
+        console.log("Login successfully");
         setErrorResponse("")
         goTo("/")
       } else {

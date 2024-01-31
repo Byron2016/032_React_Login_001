@@ -516,6 +516,36 @@
         }
       ```
 
+- **Back-End:**
+  - **User's Authentication**
+    - You need to send 3 things: 
+      - Access Token
+      - Refresh Token
+      - User
 
+      ```js
+        ....
+        
+        /* login.js back-end project */
+        router.post('/', (req, res) => {
+          ....
+
+          // autenticar usuario.
+          const accessToken = 'access_token'
+          const refreshToken = 'refresh_token'
+          const user = {
+            id: '1',
+            name: 'John Doe',
+            username: 'JohnDoe'
+          }
+          res
+            .status(200)
+            .json(jsonResponse(200, {
+              user, accessToken, refreshToken
+            }))
+          // res.send('login')
+        })
+        ....
+      ```
 
 [⏪(Back to top)](#table-of-contents)

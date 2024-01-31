@@ -11,10 +11,17 @@ router.post('/', (req, res) => {
   }
 
   // autenticar usuario.
+  const accessToken = 'access_token'
+  const refreshToken = 'refresh_token'
+  const user = {
+    id: '1',
+    name: 'John Doe',
+    username: 'JohnDoe'
+  }
   res
     .status(200)
     .json(jsonResponse(200, {
-      message: 'User Login successfully'
+      user, accessToken, refreshToken
     }))
   // res.send('login')
 })
